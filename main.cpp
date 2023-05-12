@@ -4,7 +4,6 @@
 #include "Players/player_random.h"
 #include "AI_player/MyAiPlayer.h"
 #include "Players/player_random_safe.h"
-#include "Players/player_aggro_fast.h"
 
 
 using namespace std;
@@ -19,11 +18,10 @@ int main()
 
     //Create players
     MyAiPlayer player_0(0.1, 0.5);
-//    MyAiPlayer player_1(0.001, 0.5);
+//    MyAiPlayer player_1(0.1, 0.5);
 //    player_random_safe player_2;
 //    player_random player_0;
     player_random player_1;
-//    player_aggro_fast player_1;
     player_random player_2;
     player_random player_3;
 
@@ -48,8 +46,6 @@ int main()
 
 
     player_0.print_table();
-    cout <<endl << endl;
-//    player_1.print_table();
 
     cout << "End of main" << endl;
     return 0;
