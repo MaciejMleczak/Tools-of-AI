@@ -38,6 +38,7 @@ private:
 	int calculate_action(int move_piece);
 
 	int is_star(int square) const;  //returns how many squares we move to next star (if we are currently on the star)
+    bool is_chasing(int square);
 
 	void post_move_learning(int current_state, int next_state, int action_performed);
 

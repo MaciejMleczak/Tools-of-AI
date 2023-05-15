@@ -133,11 +133,11 @@ double MyQTable::difference(MyQTable& other_table)
 
 void MyQTable::print_q_table()
 {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < STATES; i++)
     {
-        for (int j = 0; j < 10; j++)
+        for (int j = 0; j < ACTIONS; j++)
         {
-            std::cout << std::setw(7) << q_table[i][j] << "  ";
+            std::cout << std::setw(10) << q_table[i][j] << "  ";
         }
         std::cout << std::endl;
     }
