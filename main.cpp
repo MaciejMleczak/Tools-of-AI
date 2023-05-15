@@ -22,8 +22,8 @@ int main()
 //    MyAiPlayer player_1(0.001, 0.5);
 //    player_random_safe player_2;
 //    player_random player_0;
-    player_random player_1;
-//    player_aggro_fast player_1;
+//    player_random player_1;
+    player_aggro_fast player_1;
     player_random player_2;
     player_random player_3;
 
