@@ -31,6 +31,7 @@ private:
 	void move_start(int piece);
 	void send_them_home(int square);  //sending home other pieces that were on this square
 	int count_opponents(int square);  //calculating how many opponents are on this square
+    int count_my_pins(int square);
 	int is_globe(int square);  //more like boolean
 
 	int calculate_state(int square);

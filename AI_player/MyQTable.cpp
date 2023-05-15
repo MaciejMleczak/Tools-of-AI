@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 
 
 using namespace std;
@@ -22,7 +23,7 @@ MyQTable::MyQTable()
         for (int j = 0; j < ACTIONS; j++)
         {
             q_table[i][j] = 0.0;
-            //q_table[i][j] = (long double)rand() / RAND_MAX;
+//            q_table[i][j] = (long double)rand() / RAND_MAX;
         }
     }
 
@@ -136,7 +137,7 @@ void MyQTable::print_q_table()
     {
         for (int j = 0; j < 10; j++)
         {
-            std::cout << q_table[i][j] << "  ";
+            std::cout << std::setw(7) << q_table[i][j] << "  ";
         }
         std::cout << std::endl;
     }
