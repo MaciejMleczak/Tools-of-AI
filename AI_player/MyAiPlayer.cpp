@@ -207,6 +207,8 @@ int MyAiPlayer::calculate_state(int square)
         return MyQTable::STATE_GOAL;
     else if (count_my_pins(square) > 1)
         return MyQTable::STATE_SAFE;
+    else if (is_chasing(square))
+        return MyQTable::STATE_CHASING;
     else
         return MyQTable::STATE_DANGER;
 }
@@ -279,6 +281,14 @@ int MyAiPlayer::is_star(int square) const
     }
 }
 
+bool MyAiPlayer::is_chasing(int square) {
+    for (int i = 4; i < 16; i++) {
+        if (position[i] <= square+6)            //if any opponent is in range of my pin
+            return true;
+    }
+    return false;
+}
+
 void MyAiPlayer::post_move_learning(int current_state, int next_state, int action_performed)
 {
     long double delta_q = alpha * (q_table->get_reward(action_performed) + gamma * q_table->get_max_q(next_state)
@@ -286,7 +296,7 @@ void MyAiPlayer::post_move_learning(int current_state, int next_state, int actio
 
     q_table->set_value(current_state, action_performed, q_table->get_value(current_state,
                                                                          action_performed) + delta_q);
-//    std::cout << delta_q << std::endl;
+    std::cout << delta_q << std::endl;
 }
 
 void MyAiPlayer::print_table()
