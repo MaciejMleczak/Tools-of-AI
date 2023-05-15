@@ -23,7 +23,7 @@ MyQTable::MyQTable()
         for (int j = 0; j < ACTIONS; j++)
         {
             q_table[i][j] = 0.0;
-//            q_table[i][j] = (long double)rand() / RAND_MAX;
+//            q_table[i][j] = static_cast<long double>(std::rand()) / RAND_MAX * 2.0 - 1.0;
         }
     }
 
