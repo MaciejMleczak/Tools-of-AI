@@ -29,6 +29,7 @@ public:
     static const int STATE_SAFE = 2;
     static const int STATE_DANGER = 3;
     static const int STATE_CHASING = 4;
+    static const int STATE_ALONE = 5;
 
     static const int MOVE_OUT = 0;
     static const int NORMAL = 1;
@@ -43,7 +44,7 @@ public:
 
 
 private:
-    static const int STATES = 5;
+    static const int STATES = 6;
     static const int ACTIONS = 10;
 
 

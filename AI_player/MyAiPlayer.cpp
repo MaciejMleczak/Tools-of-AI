@@ -197,7 +197,7 @@ int MyAiPlayer::is_globe(int square)
 
 int MyAiPlayer::calculate_state(int square)
 {
-    if (is_globe(square)) 
+    if (is_globe(square))
         return MyQTable::STATE_SAFE;
     else if (square > 51 && square < 56)
         return MyQTable::STATE_SAFE;
@@ -209,8 +209,10 @@ int MyAiPlayer::calculate_state(int square)
         return MyQTable::STATE_SAFE;
     else if (is_chasing(square))
         return MyQTable::STATE_CHASING;
-    else
+    else if (is_hunted(square))
         return MyQTable::STATE_DANGER;
+    else
+        return MyQTable::STATE_ALONE;
 }
 
 int MyAiPlayer::calculate_action(int move_piece)
@@ -221,9 +223,9 @@ int MyAiPlayer::calculate_action(int move_piece)
 
     if (next_possible_square == 99)
         return MyQTable::IN_GOAL;
-    else if (is_star(next_possible_square)) {
-        return MyQTable::STAR;
-    }
+//    else if (is_star(next_possible_square)) {
+//        return MyQTable::STAR;
+//    }
     else if (next_possible_square > 50 && next_possible_square < 56) {
         return MyQTable::GOAL_ZONE;
     }
@@ -243,7 +245,7 @@ int MyAiPlayer::calculate_action(int move_piece)
 
         if (opponents == 0) {
             if (is_globe(next_possible_square)) {       //if there is no oponents and its globe we are sfe
-                return MyQTable::GLOBE;
+                return MyQTable::PROTECT;
             }
             return MyQTable::NORMAL;                    //if there is no opponent and its not globe we are doing normal
         }
@@ -283,7 +285,15 @@ int MyAiPlayer::is_star(int square) const
 
 bool MyAiPlayer::is_chasing(int square) {
     for (int i = 4; i < 16; i++) {
-        if (position[i] <= square+6)            //if any opponent is in range of my pin
+        if (position[i] <= square+6 && position[i] > square)            //if any opponent is in range of my pin
+            return true;
+    }
+    return false;
+}
+
+bool MyAiPlayer::is_hunted(int square) {
+    for (int i = 4; i < 16; i++) {
+        if (position[i] >= square-6 && position[i] < square)            //if any opponent is in range of my pin
             return true;
     }
     return false;
@@ -294,9 +304,18 @@ void MyAiPlayer::post_move_learning(int current_state, int next_state, int actio
     long double delta_q = alpha * (q_table->get_reward(action_performed) + gamma * q_table->get_max_q(next_state)
         - q_table->get_value(current_state, action_performed));
 
+
+    std::cout << "Q: " << q_table->get_value(current_state, action_performed)
+    << "  QMAX: " << q_table->get_max_q(next_state) << "   R: "
+    << q_table->get_reward(action_performed)
+              << "  DELTAQ: " << delta_q << std::endl;
+
     q_table->set_value(current_state, action_performed, q_table->get_value(current_state,
                                                                          action_performed) + delta_q);
-    std::cout << delta_q << std::endl;
+
+//    std::cout << "CURR STATE: " << current_state << "  NEXT STATE: " << next_state << "   ACTION: " << action_performed
+//        << "  DELTAQ: " << delta_q << std::endl;
+//    std::cout << delta_q << std::endl;
 }
 
 void MyAiPlayer::print_table()
