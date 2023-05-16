@@ -7,7 +7,7 @@ class MyAiPlayer : public iplayer
 
 public:
 	MyAiPlayer();
-	MyAiPlayer(long double _alpha, long double _gamma);
+	MyAiPlayer(long double _alpha, long double _gamma, long double _epsilon);
 	MyQTable* q_table;
 
 	void print_table();
@@ -18,6 +18,7 @@ private:
 
 	long double alpha;
 	long double gamma;
+	long double epsilon;
 
 	int* post_move_position;  //collect post move position of all pieces
 
@@ -31,12 +32,16 @@ private:
 	void move_start(int piece);
 	void send_them_home(int square);  //sending home other pieces that were on this square
 	int count_opponents(int square);  //calculating how many opponents are on this square
+    int count_my_pins(int square);
 	int is_globe(int square);  //more like boolean
 
 	int calculate_state(int square);
 	int calculate_action(int move_piece);
 
 	int is_star(int square) const;  //returns how many squares we move to next star (if we are currently on the star)
+    bool is_chasing(int square);
+    bool is_hunted(int square);
+    bool is_overtaking(int current_square, int next_square);
 
 	void post_move_learning(int current_state, int next_state, int action_performed);
 

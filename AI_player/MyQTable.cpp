@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 
 
 using namespace std;
@@ -22,22 +23,23 @@ MyQTable::MyQTable()
         for (int j = 0; j < ACTIONS; j++)
         {
             q_table[i][j] = 0.0;
-            //q_table[i][j] = (long double)rand() / RAND_MAX;
+//            q_table[i][j] = static_cast<long double>(std::rand()) / RAND_MAX * 2.0 - 1.0;
         }
     }
 
     reward_table = new long double[ACTIONS];
     
-    reward_table[MOVE_OUT] = 0.25;
-    reward_table[NORMAL] = 0.2;
-    reward_table[IN_GOAL] = 0.8;
-    reward_table[STAR] = 0.6;
-    reward_table[GLOBE] = 0.4;
-    reward_table[PROTECT] = 0.3;
-    reward_table[KILL] = 0.3;
-    reward_table[DIE] = 0.01;
-    reward_table[GOAL_ZONE] = 0.4;
+    reward_table[MOVE_OUT] = 4;
+    reward_table[NORMAL] = 2;
+    reward_table[IN_GOAL] = 10;
+    reward_table[STAR] = 6.5;
+    reward_table[GLOBE] = 4.5;
+    reward_table[PROTECT] = 3;
+    reward_table[KILL] = 8;
+    reward_table[DIE] = -1;
+    reward_table[GOAL_ZONE] = 6;
     reward_table[NOTHING] = 0;
+    reward_table[OVERTAKE] = 1;
 }
 
 long double MyQTable::get_value(int state, int action)
@@ -132,11 +134,11 @@ double MyQTable::difference(MyQTable& other_table)
 
 void MyQTable::print_q_table()
 {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < STATES; i++)
     {
-        for (int j = 0; j < 10; j++)
+        for (int j = 0; j < ACTIONS; j++)
         {
-            std::cout << q_table[i][j] << "  ";
+            std::cout << std::setw(10) << q_table[i][j] << "  ";
         }
         std::cout << std::endl;
     }
