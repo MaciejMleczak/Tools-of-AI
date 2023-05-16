@@ -207,12 +207,12 @@ int MyAiPlayer::calculate_state(int square)
         return MyQTable::STATE_GOAL;
     else if (count_my_pins(square) > 1)
         return MyQTable::STATE_SAFE;
-    else if (is_chasing(square))
-        return MyQTable::STATE_CHASING;
-    else if (is_hunted(square))
-        return MyQTable::STATE_DANGER;
+//    else if (is_chasing(square))
+//        return MyQTable::STATE_CHASING;
+//    else if (is_hunted(square))
+//        return MyQTable::STATE_DANGER;
     else
-        return MyQTable::STATE_ALONE;
+        return MyQTable::STATE_DANGER;
 }
 
 int MyAiPlayer::calculate_action(int move_piece)
@@ -223,9 +223,9 @@ int MyAiPlayer::calculate_action(int move_piece)
 
     if (next_possible_square == 99)
         return MyQTable::IN_GOAL;
-//    else if (is_star(next_possible_square)) {
-//        return MyQTable::STAR;
-//    }
+    else if (is_star(next_possible_square)) {
+        return MyQTable::STAR;
+    }
     else if (next_possible_square > 50 && next_possible_square < 56) {
         return MyQTable::GOAL_ZONE;
     }
@@ -240,12 +240,15 @@ int MyAiPlayer::calculate_action(int move_piece)
     {
         int opponents = count_opponents(next_possible_square);
 
-        if (count_my_pins(square) > 1)
+        if (count_my_pins(next_possible_square) > 1)
             return MyQTable::PROTECT;
 
         if (opponents == 0) {
             if (is_globe(next_possible_square)) {       //if there is no oponents and its globe we are sfe
                 return MyQTable::PROTECT;
+            }
+            if(is_overtaking(square, next_possible_square)){
+                return MyQTable::OVERTAKE;
             }
             return MyQTable::NORMAL;                    //if there is no opponent and its not globe we are doing normal
         }
@@ -299,16 +302,25 @@ bool MyAiPlayer::is_hunted(int square) {
     return false;
 }
 
+bool MyAiPlayer::is_overtaking(int current_square, int next_square) {
+    for (int i = 4; i < 16; i++) {
+        if (position[i] > current_square && position[i] < next_square)
+            return true;
+    }
+    return false;
+}
+
+
 void MyAiPlayer::post_move_learning(int current_state, int next_state, int action_performed)
 {
     long double delta_q = alpha * (q_table->get_reward(action_performed) + gamma * q_table->get_max_q(next_state)
         - q_table->get_value(current_state, action_performed));
 
 
-    std::cout << "Q: " << q_table->get_value(current_state, action_performed)
-    << "  QMAX: " << q_table->get_max_q(next_state) << "   R: "
-    << q_table->get_reward(action_performed)
-              << "  DELTAQ: " << delta_q << std::endl;
+//    std::cout << "Q: " << q_table->get_value(current_state, action_performed)
+//    << "  QMAX: " << q_table->get_max_q(next_state) << "   R: "
+//    << q_table->get_reward(action_performed)
+//              << "  DELTAQ: " << delta_q << std::endl;
 
     q_table->set_value(current_state, action_performed, q_table->get_value(current_state,
                                                                          action_performed) + delta_q);
