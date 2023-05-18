@@ -86,8 +86,3 @@
 426	522	7059471669073159	LudoGame.exe	549ff2fac676f510
 4	405	7059471889102496	CMakeFiles/LudoGame.dir/AI_player/MyQTable.cpp.obj	c4f0b73a5fb215f1
 405	504	7059471890055497	LudoGame.exe	549ff2fac676f510
-7	419	7059481475774078	CMakeFiles/LudoGame.dir/AI_player/MyAiPlayer.cpp.obj	b6a237ec442bccb7
-11	517	7059481476755842	CMakeFiles/LudoGame.dir/AI_player/MyQTable.cpp.obj	c4f0b73a5fb215f1
-16	608	7059481477663293	CMakeFiles/LudoGame.dir/Domain_Code/game.cpp.obj	bb87d93458c7f37a
-3	700	7059481478582606	CMakeFiles/LudoGame.dir/main.cpp.obj	f37e48b4cc75215f
-700	798	7059481479514879	LudoGame.exe	549ff2fac676f510
