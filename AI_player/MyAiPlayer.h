@@ -10,6 +10,7 @@ public:
 	MyAiPlayer(long double _alpha, long double _gamma, long double _epsilon);
 	MyQTable* q_table;
 
+    void decrease_epsilon(long double decrease_value);
 	void print_table();
     ~MyAiPlayer();
 
@@ -22,9 +23,13 @@ private:
 
 	int* post_move_position;  //collect post move position of all pieces
 
+    int* pieces_out;
+
 	int make_decision(); //deciding which piece we are moving
 
 	void calc_post_move_position(int move_piece);
+	void learn_knocked_pieces();
+    void update_pieces_out();
 
 	
 

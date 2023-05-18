@@ -29,17 +29,18 @@ MyQTable::MyQTable()
 
     reward_table = new long double[ACTIONS];
     
-    reward_table[MOVE_OUT] = 4;
-    reward_table[NORMAL] = 2;
-    reward_table[IN_GOAL] = 10;
-    reward_table[STAR] = 6.5;
-    reward_table[GLOBE] = 4.5;
-    reward_table[PROTECT] = 3;
-    reward_table[KILL] = 8;
-    reward_table[DIE] = -1;
-    reward_table[GOAL_ZONE] = 6;
+    reward_table[MOVE_OUT] = 0.4;
+    reward_table[NORMAL] = 0.2;
+    reward_table[IN_GOAL] = 1;
+    reward_table[STAR] = 0.65;
+    reward_table[GLOBE] = 0.45;
+    reward_table[PROTECT] = 0.3;
+    reward_table[KILL] = 0.8;
+    reward_table[DIE] = -0.1;
+    reward_table[GOAL_ZONE] = 0.2;
     reward_table[NOTHING] = 0;
-    reward_table[OVERTAKE] = 1;
+    reward_table[OVERTAKE] = 0.1;
+
 }
 
 long double MyQTable::get_value(int state, int action)

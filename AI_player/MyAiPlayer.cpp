@@ -7,6 +7,7 @@ MyAiPlayer::MyAiPlayer()
     epsilon = 0.5;
     q_table = new MyQTable();
     post_move_position = new int[16];
+    pieces_out = new int[4]{};
 }
 
 MyAiPlayer::MyAiPlayer(long double _alpha, long double _gamma, long double _epsilon)
@@ -16,10 +17,36 @@ MyAiPlayer::MyAiPlayer(long double _alpha, long double _gamma, long double _epsi
     epsilon = _epsilon;
     q_table = new MyQTable();
     post_move_position = new int[16];
+    pieces_out = new int[4]{};
+}
+
+void MyAiPlayer::decrease_epsilon(long double decrease_value) {
+    epsilon -= decrease_value;
+}
+
+void MyAiPlayer::learn_knocked_pieces() {
+    for(int i=0; i<4; i++){
+        if(position[i] == -1 && post_move_position[i] != -1){  //this means that we were knocked home so learn
+            post_move_learning(calculate_state(post_move_position[i]),
+                               MyQTable::STATE_HOME, MyQTable::DIE);
+        }
+    }
+}
+
+void MyAiPlayer::update_pieces_out() {
+    for(int i=0; i<4; i++){
+        if(position[i] == -1 ){
+            pieces_out[i] = 0;
+        }
+        else{
+            pieces_out[i] = 1;
+        }
+    }
 }
 
 int MyAiPlayer::make_decision()
 {
+    learn_knocked_pieces();
     int valid_moves[4];
     int valid_count = 0;
 
@@ -46,7 +73,24 @@ int MyAiPlayer::make_decision()
         post_move_learning(calculate_state(position[moved_pin]),
                            calculate_state(post_move_position[moved_pin]),
                                                 calculate_action(moved_pin));
+        update_pieces_out();
         return valid_moves[0];
+    }
+
+
+    double probability = (double)std::rand() / RAND_MAX;
+    int random_number = 0;
+    if(probability < epsilon){
+//        std::cout << "EGREEDY" << std::endl;
+        random_number = rand() % (valid_count);
+        int moved_pin = valid_moves[random_number];
+        calc_post_move_position(moved_pin);
+
+        post_move_learning(calculate_state(position[moved_pin]),
+                           calculate_state(post_move_position[moved_pin]),
+                           calculate_action(moved_pin));
+        update_pieces_out();
+        return valid_moves[moved_pin];
     }
 
     long double max_q_value = -1.0;
@@ -90,16 +134,18 @@ int MyAiPlayer::make_decision()
         calc_post_move_position(moving_piece[0]);
         post_move_learning(current_states[moving_piece[0]], possible_states[moving_piece[0]],
                            possible_actions[moving_piece[0]]);
+        update_pieces_out();
         return moving_piece[0];
     }
 
     //if there is more we random
-    int random_number = rand() % (max_count);
+    random_number = rand() % (max_count);
     calc_post_move_position(moving_piece[random_number]);
 
     post_move_learning(current_states[moving_piece[random_number]], 
         possible_states[moving_piece[random_number]], possible_actions[moving_piece[random_number]]);
 
+    update_pieces_out();
     return moving_piece[random_number];
 
 }
