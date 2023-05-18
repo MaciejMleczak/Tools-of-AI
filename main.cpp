@@ -39,12 +39,14 @@ int main()
 
     //Play many games of Ludo
     int wins[] = {0, 0, 0, 0};
-    for(int i = 0; i < 1000; i++)
-    {
+    for(int i = 0; i < 10000; i++) {
         g.reset();
-        g.set_first(i%4); //alternate who starts the game
+        g.set_first(i % 4); //alternate who starts the game
         g.play_game();
         wins[g.get_winner()]++;
+        if (i < 500) {
+            player_0.decrease_epsilon(0.0014);
+        }
     }
     for(int i = 0; i < 4; i++)
         cout << "Player " << i << " won " << wins[i] << " games." << endl << endl;
