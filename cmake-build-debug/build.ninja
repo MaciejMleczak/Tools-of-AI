@@ -97,6 +97,12 @@ build CMakeFiles/LudoGame.dir/Players/move_logic.cpp.obj: CXX_COMPILER__LudoGame
   OBJECT_DIR = CMakeFiles\LudoGame.dir
   OBJECT_FILE_DIR = CMakeFiles\LudoGame.dir\Players
 
+build CMakeFiles/LudoGame.dir/ResultAnalysis/AnalysisController.cpp.obj: CXX_COMPILER__LudoGame_Debug C$:/Users/macie/CLionProjects/LudoGame/ResultAnalysis/AnalysisController.cpp || cmake_object_order_depends_target_LudoGame
+  DEP_FILE = CMakeFiles\LudoGame.dir\ResultAnalysis\AnalysisController.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\LudoGame.dir
+  OBJECT_FILE_DIR = CMakeFiles\LudoGame.dir\ResultAnalysis
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target LudoGame
@@ -105,7 +111,7 @@ build CMakeFiles/LudoGame.dir/Players/move_logic.cpp.obj: CXX_COMPILER__LudoGame
 #############################################
 # Link the executable LudoGame.exe
 
-build LudoGame.exe: CXX_EXECUTABLE_LINKER__LudoGame_Debug CMakeFiles/LudoGame.dir/main.cpp.obj CMakeFiles/LudoGame.dir/AI_player/ai_player.cpp.obj CMakeFiles/LudoGame.dir/AI_player/MyAiPlayer.cpp.obj CMakeFiles/LudoGame.dir/AI_player/MyQTable.cpp.obj CMakeFiles/LudoGame.dir/AI_player/q_table.cpp.obj CMakeFiles/LudoGame.dir/Domain_Code/game.cpp.obj CMakeFiles/LudoGame.dir/Domain_Code/test_game.cpp.obj CMakeFiles/LudoGame.dir/Players/move_logic.cpp.obj
+build LudoGame.exe: CXX_EXECUTABLE_LINKER__LudoGame_Debug CMakeFiles/LudoGame.dir/main.cpp.obj CMakeFiles/LudoGame.dir/AI_player/ai_player.cpp.obj CMakeFiles/LudoGame.dir/AI_player/MyAiPlayer.cpp.obj CMakeFiles/LudoGame.dir/AI_player/MyQTable.cpp.obj CMakeFiles/LudoGame.dir/AI_player/q_table.cpp.obj CMakeFiles/LudoGame.dir/Domain_Code/game.cpp.obj CMakeFiles/LudoGame.dir/Domain_Code/test_game.cpp.obj CMakeFiles/LudoGame.dir/Players/move_logic.cpp.obj CMakeFiles/LudoGame.dir/ResultAnalysis/AnalysisController.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\LudoGame.dir

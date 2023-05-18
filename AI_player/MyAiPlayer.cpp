@@ -5,19 +5,34 @@ MyAiPlayer::MyAiPlayer()
 	alpha = 0.5;
 	gamma = 0.5;
     epsilon = 0.5;
+    qLearning = true;
     q_table = new MyQTable();
     post_move_position = new int[16];
-    pieces_out = new int[4]{};
+    previous_state = new int[4]{MyQTable::STATE_HOME, MyQTable::STATE_HOME, MyQTable::STATE_HOME,
+                                MyQTable::STATE_HOME};
+    previous_action_performed = new int[4]{MyQTable::NOTHING, MyQTable::NOTHING, MyQTable::NOTHING,
+                                           MyQTable::NOTHING};
 }
 
-MyAiPlayer::MyAiPlayer(long double _alpha, long double _gamma, long double _epsilon)
+MyAiPlayer::MyAiPlayer(long double _alpha, long double _gamma, long double _epsilon, bool _qLearning)
 {
 	alpha = _alpha;
 	gamma = _gamma;
     epsilon = _epsilon;
+    qLearning = _qLearning;
     q_table = new MyQTable();
     post_move_position = new int[16];
-    pieces_out = new int[4]{};
+    previous_state = new int[4]{MyQTable::STATE_HOME, MyQTable::STATE_HOME, MyQTable::STATE_HOME,
+                                MyQTable::STATE_HOME};
+    previous_action_performed = new int[4]{MyQTable::NOTHING, MyQTable::NOTHING, MyQTable::NOTHING,
+                                           MyQTable::NOTHING};
+}
+
+MyAiPlayer::~MyAiPlayer() {
+    delete[] post_move_position;
+    delete q_table;
+    delete[] previous_state;
+    delete[] previous_action_performed;
 }
 
 void MyAiPlayer::decrease_epsilon(long double decrease_value) {
@@ -27,41 +42,35 @@ void MyAiPlayer::decrease_epsilon(long double decrease_value) {
 void MyAiPlayer::learn_knocked_pieces() {
     for(int i=0; i<4; i++){
         if(position[i] == -1 && post_move_position[i] != -1){  //this means that we were knocked home so learn
-            post_move_learning(calculate_state(post_move_position[i]),
-                               MyQTable::STATE_HOME, MyQTable::DIE);
+            if(qLearning) {
+                post_move_learning(calculate_state(post_move_position[i]),
+                                   MyQTable::STATE_HOME, MyQTable::DIE);
+            }
+            else
+                SARSA_learning(0, calculate_state(post_move_position[i]),MyQTable::DIE);
         }
     }
 }
 
-void MyAiPlayer::update_pieces_out() {
-    for(int i=0; i<4; i++){
-        if(position[i] == -1 ){
-            pieces_out[i] = 0;
-        }
-        else{
-            pieces_out[i] = 1;
-        }
-    }
-}
 
-int MyAiPlayer::make_decision()
-{
+int MyAiPlayer::make_decision() {
     learn_knocked_pieces();
     int valid_moves[4];
     int valid_count = 0;
 
-    for (int i = 0; i < 4; i++)
-    {
-        if (is_valid_move(i))
-        {
+    for (int i = 0; i < 4; i++) {
+        if (is_valid_move(i)) {
             valid_moves[valid_count] = i;  //save index of piece which has valid move
             valid_count++;
         }
     }
 
     //no moves allowed
-    if (valid_count == 0){
-        post_move_learning(MyQTable::STATE_HOME, MyQTable::STATE_HOME, MyQTable::NOTHING);
+    if (valid_count == 0) {
+        if (qLearning)
+            post_move_learning(MyQTable::STATE_HOME, MyQTable::STATE_HOME, MyQTable::NOTHING);
+        else
+            SARSA_learning(0, MyQTable::STATE_HOME, MyQTable::NOTHING);
         return -1;
     }
 
@@ -69,31 +78,36 @@ int MyAiPlayer::make_decision()
     if (valid_count == 1) {
         int moved_pin = valid_moves[0];
         calc_post_move_position(moved_pin);
-
-        post_move_learning(calculate_state(position[moved_pin]),
-                           calculate_state(post_move_position[moved_pin]),
-                                                calculate_action(moved_pin));
-        update_pieces_out();
+        if (qLearning) {
+            post_move_learning(calculate_state(position[moved_pin]),
+                               calculate_state(post_move_position[moved_pin]),
+                               calculate_action(moved_pin));
+        } else {
+            SARSA_learning(moved_pin, calculate_state(position[moved_pin]),
+                           calculate_action(moved_pin));
+        }
         return valid_moves[0];
     }
 
 
-    double probability = (double)std::rand() / RAND_MAX;
+    double probability = (double) std::rand() / RAND_MAX;
     int random_number = 0;
-    if(probability < epsilon){
-//        std::cout << "EGREEDY" << std::endl;
+    if (probability < epsilon) {
         random_number = rand() % (valid_count);
         int moved_pin = valid_moves[random_number];
         calc_post_move_position(moved_pin);
-
-        post_move_learning(calculate_state(position[moved_pin]),
-                           calculate_state(post_move_position[moved_pin]),
+        if (qLearning) {
+            post_move_learning(calculate_state(position[moved_pin]),
+                               calculate_state(post_move_position[moved_pin]),
+                               calculate_action(moved_pin));
+        } else {
+            SARSA_learning(moved_pin, calculate_state(position[moved_pin]),
                            calculate_action(moved_pin));
-        update_pieces_out();
-        return valid_moves[moved_pin];
+        }
+        return moved_pin;
     }
 
-    long double max_q_value = -1.0;
+    long double max_q_value = -1000.0;
 
     int current_states[valid_count];
     int possible_states[valid_count];
@@ -102,7 +116,7 @@ int MyAiPlayer::make_decision()
     long double q_value = -1.0;
     int max_count = 0;
     int moving_piece[4];
-    
+
     for (int i = 0; i < valid_count; i++) {
         int piece = valid_moves[i];
         calc_post_move_position(piece);
@@ -113,14 +127,11 @@ int MyAiPlayer::make_decision()
 
         q_value = q_table->get_value(current_states[piece], possible_actions[piece]);
 
-        if (q_value > max_q_value)
-        {
+        if (q_value > max_q_value) {
             max_q_value = q_value;
             moving_piece[0] = piece;
             max_count = 1;
-        }
-        else if (q_value == max_q_value)
-        {
+        } else if (q_value == max_q_value) {
             moving_piece[max_count] = piece;
             max_count++;
         }
@@ -131,22 +142,30 @@ int MyAiPlayer::make_decision()
         throw std::exception();
     }
     if (max_count == 1) {
+        int moved_pin = moving_piece[0];
         calc_post_move_position(moving_piece[0]);
-        post_move_learning(current_states[moving_piece[0]], possible_states[moving_piece[0]],
-                           possible_actions[moving_piece[0]]);
-        update_pieces_out();
-        return moving_piece[0];
+        if (qLearning) {
+            post_move_learning(current_states[moved_pin], possible_states[moved_pin],
+                               possible_actions[moved_pin]);
+        } else {
+            SARSA_learning(moved_pin, calculate_state(position[moved_pin]),
+                           calculate_action(moved_pin));
+        }
+        return moved_pin;
     }
 
     //if there is more we random
     random_number = rand() % (max_count);
-    calc_post_move_position(moving_piece[random_number]);
-
-    post_move_learning(current_states[moving_piece[random_number]], 
-        possible_states[moving_piece[random_number]], possible_actions[moving_piece[random_number]]);
-
-    update_pieces_out();
-    return moving_piece[random_number];
+    int moved_pin = moving_piece[random_number];
+    calc_post_move_position(moved_pin);
+    if (qLearning) {
+        post_move_learning(current_states[moved_pin], possible_states[moved_pin],
+                           possible_actions[moved_pin]);
+    } else {
+        SARSA_learning(moved_pin, calculate_state(position[moved_pin]),
+                   calculate_action(moved_pin));
+    }
+    return moved_pin;
 
 }
 
@@ -245,8 +264,11 @@ int MyAiPlayer::is_globe(int square)
 
 int MyAiPlayer::calculate_state(int square)
 {
-    if (is_globe(square))
+    int opponents = count_opponents(square);
+    if (is_globe(square) && opponents == 0)
         return MyQTable::STATE_SAFE;
+    else if (is_globe(square))
+        return MyQTable::STATE_DANGER;
     else if (square > 51 && square < 56)
         return MyQTable::STATE_SAFE;
     else if (square == -1)
@@ -255,10 +277,6 @@ int MyAiPlayer::calculate_state(int square)
         return MyQTable::STATE_GOAL;
     else if (count_my_pins(square) > 1)
         return MyQTable::STATE_SAFE;
-//    else if (is_chasing(square))
-//        return MyQTable::STATE_CHASING;
-//    else if (is_hunted(square))
-//        return MyQTable::STATE_DANGER;
     else
         return MyQTable::STATE_DANGER;
 }
@@ -334,21 +352,6 @@ int MyAiPlayer::is_star(int square) const
     }
 }
 
-bool MyAiPlayer::is_chasing(int square) {
-    for (int i = 4; i < 16; i++) {
-        if (position[i] <= square+6 && position[i] > square)            //if any opponent is in range of my pin
-            return true;
-    }
-    return false;
-}
-
-bool MyAiPlayer::is_hunted(int square) {
-    for (int i = 4; i < 16; i++) {
-        if (position[i] >= square-6 && position[i] < square)            //if any opponent is in range of my pin
-            return true;
-    }
-    return false;
-}
 
 bool MyAiPlayer::is_overtaking(int current_square, int next_square) {
     for (int i = 4; i < 16; i++) {
@@ -361,13 +364,17 @@ bool MyAiPlayer::is_overtaking(int current_square, int next_square) {
 
 void MyAiPlayer::post_move_learning(int current_state, int next_state, int action_performed)
 {
-    long double delta_q = alpha * (q_table->get_reward(action_performed) + gamma * q_table->get_max_q(next_state)
-        - q_table->get_value(current_state, action_performed));
+    long double delta_q = alpha * (q_table->get_reward(action_performed)
+            + gamma * q_table->get_max_q(next_state)
+            - q_table->get_value(current_state, action_performed));
 
+//    if(delta_q > 0)
+//        std::cout << "  DELTAQ: " << delta_q << std::endl;
 
-//    std::cout << "Q: " << q_table->get_value(current_state, action_performed)
-//    << "  QMAX: " << q_table->get_max_q(next_state) << "   R: "
-//    << q_table->get_reward(action_performed)
+//    std::cout<< "NEX S: " << next_state << "  CUR S: " << current_state << "  A PER: " << action_performed <<std::endl;
+//    std::cout<< "   R: "<< q_table->get_reward(action_performed)
+//    << "  QMAX: " << q_table->get_max_q(next_state)
+//            << "  Q: " << q_table->get_value(current_state, action_performed)
 //              << "  DELTAQ: " << delta_q << std::endl;
 
     q_table->set_value(current_state, action_performed, q_table->get_value(current_state,
@@ -378,12 +385,25 @@ void MyAiPlayer::post_move_learning(int current_state, int next_state, int actio
 //    std::cout << delta_q << std::endl;
 }
 
+void MyAiPlayer::SARSA_learning(int moving_pin, int current_state, int action_performed) {
+    long double delta_q = alpha * (q_table->get_reward(previous_action_performed[moving_pin])
+            + gamma * q_table->get_value(current_state, action_performed)
+            - q_table->get_value(previous_state[moving_pin], previous_action_performed[moving_pin]));
+
+//    std::cout<< "   R: "<< q_table->get_reward(previous_action_performed[moving_pin])
+//             << "  Q1: " << q_table->get_value(current_state, action_performed)
+//             << "  Q0: " << q_table->get_value(previous_state[moving_pin], previous_action_performed[moving_pin])
+//             << "  DELTAQ: " << delta_q << std::endl;
+
+    q_table->set_value(previous_state[moving_pin], previous_action_performed[moving_pin],
+                       q_table->get_value(previous_state[moving_pin],
+                                          previous_action_performed[moving_pin]) + delta_q);
+
+    previous_state[moving_pin] = current_state;
+    previous_action_performed[moving_pin] = action_performed;
+}
+
 void MyAiPlayer::print_table()
 {
     q_table->print_q_table();
-}
-
-MyAiPlayer::~MyAiPlayer() {
-    delete[] post_move_position;
-    delete q_table;
 }

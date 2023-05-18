@@ -7,7 +7,7 @@ class MyAiPlayer : public iplayer
 
 public:
 	MyAiPlayer();
-	MyAiPlayer(long double _alpha, long double _gamma, long double _epsilon);
+	MyAiPlayer(long double _alpha, long double _gamma, long double _epsilon, bool _qLearning);
 	MyQTable* q_table;
 
     void decrease_epsilon(long double decrease_value);
@@ -21,15 +21,18 @@ private:
 	long double gamma;
 	long double epsilon;
 
+    bool qLearning;
+
 	int* post_move_position;  //collect post move position of all pieces
 
-    int* pieces_out;
+    int* previous_state;
+    int* previous_action_performed;
+
 
 	int make_decision(); //deciding which piece we are moving
 
 	void calc_post_move_position(int move_piece);
 	void learn_knocked_pieces();
-    void update_pieces_out();
 
 	
 
@@ -44,12 +47,11 @@ private:
 	int calculate_action(int move_piece);
 
 	int is_star(int square) const;  //returns how many squares we move to next star (if we are currently on the star)
-    bool is_chasing(int square);
-    bool is_hunted(int square);
     bool is_overtaking(int current_square, int next_square);
 
 	void post_move_learning(int current_state, int next_state, int action_performed);
 
+    void SARSA_learning(int moving_pin, int current_state, int action_performed);
 
 };
 

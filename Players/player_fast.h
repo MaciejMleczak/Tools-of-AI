@@ -1,8 +1,8 @@
 #ifndef PLAYER_FAST_H
 #define PLAYER_FAST_H
 
-#include "iplayer.h"
 #include "move_logic.h"
+#include "../Domain_Code/iplayer.h"
 
 //***************************************************************************************
 //*     Strategy of 'player_fast'                                                       *

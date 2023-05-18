@@ -28,25 +28,22 @@ public:
     static const int STATE_GOAL = 1;
     static const int STATE_SAFE = 2;
     static const int STATE_DANGER = 3;
-//    static const int STATE_CHASING = 4;
-//    static const int STATE_ALONE = 5;
 
     static const int MOVE_OUT = 0;
     static const int NORMAL = 1;
     static const int IN_GOAL = 2;
     static const int STAR = 3;
-    static const int GLOBE = 4;
-    static const int PROTECT = 5;
-    static const int KILL = 6;
-    static const int DIE = 7;
-    static const int GOAL_ZONE = 8;
-    static const int NOTHING = 9;
-    static const int OVERTAKE = 10;
+    static const int PROTECT = 4;
+    static const int KILL = 5;
+    static const int DIE = 6;
+    static const int GOAL_ZONE = 7;
+    static const int NOTHING = 8;
+    static const int OVERTAKE = 9;
 
 
 private:
     static const int STATES = 4;
-    static const int ACTIONS = 11;
+    static const int ACTIONS = 10;
 
 
     long double** q_table;
