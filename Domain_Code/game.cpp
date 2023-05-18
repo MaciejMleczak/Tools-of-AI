@@ -275,7 +275,7 @@ int game::is_star(int square)
     case 11: return 7;
     case 24: return 7;
     case 37: return 7;
-    case 50: return 7;
+    case 50: return 6;
 
     default: return 0;
     }

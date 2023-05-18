@@ -7,7 +7,7 @@ class MyAiPlayer : public iplayer
 
 public:
 	MyAiPlayer();
-	MyAiPlayer(long double _alpha, long double _gamma);
+	MyAiPlayer(long double _alpha, long double _gamma, long double _epsilon);
 	MyQTable* q_table;
 
     void decrease_epsilon(long double decrease_value);
@@ -19,6 +19,7 @@ private:
 
 	long double alpha;
 	long double gamma;
+	long double epsilon;
 
 	int* post_move_position;  //collect post move position of all pieces
 

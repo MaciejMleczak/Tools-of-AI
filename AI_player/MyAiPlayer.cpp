@@ -4,15 +4,17 @@ MyAiPlayer::MyAiPlayer()
 {
 	alpha = 0.5;
 	gamma = 0.5;
+    epsilon = 0.5;
     q_table = new MyQTable();
     post_move_position = new int[16];
     pieces_out = new int[4]{};
 }
 
-MyAiPlayer::MyAiPlayer(long double _alpha, long double _gamma)
+MyAiPlayer::MyAiPlayer(long double _alpha, long double _gamma, long double _epsilon)
 {
 	alpha = _alpha;
 	gamma = _gamma;
+    epsilon = _epsilon;
     q_table = new MyQTable();
     post_move_position = new int[16];
     pieces_out = new int[4]{};
@@ -243,8 +245,11 @@ int MyAiPlayer::is_globe(int square)
 
 int MyAiPlayer::calculate_state(int square)
 {
-    if (is_globe(square))
+    int opponents = count_opponents(square);
+    if (is_globe(square) && opponents == 0)
         return MyQTable::STATE_SAFE;
+    else if (is_globe(square))
+        return MyQTable::STATE_DANGER;
     else if (square > 51 && square < 56)
         return MyQTable::STATE_SAFE;
     else if (square == -1)
@@ -253,10 +258,6 @@ int MyAiPlayer::calculate_state(int square)
         return MyQTable::STATE_GOAL;
     else if (count_my_pins(square) > 1)
         return MyQTable::STATE_SAFE;
-//    else if (is_chasing(square))
-//        return MyQTable::STATE_CHASING;
-//    else if (is_hunted(square))
-//        return MyQTable::STATE_DANGER;
     else
         return MyQTable::STATE_DANGER;
 }

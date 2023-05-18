@@ -33,10 +33,9 @@ MyQTable::MyQTable()
     reward_table[NORMAL] = 0.2;
     reward_table[IN_GOAL] = 1;
     reward_table[STAR] = 0.65;
-    reward_table[GLOBE] = 0.45;
     reward_table[PROTECT] = 0.3;
     reward_table[KILL] = 0.8;
-    reward_table[DIE] = -0.1;
+    reward_table[DIE] = -0.5;
     reward_table[GOAL_ZONE] = 0.2;
     reward_table[NOTHING] = 0;
     reward_table[OVERTAKE] = 0.1;

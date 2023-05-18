@@ -19,7 +19,7 @@ int main()
 
 
     //Create players
-    MyAiPlayer player_0(0.1, 0.5);
+    MyAiPlayer player_0(0.1, 0.5, 0.7);
 //    MyAiPlayer player_1(0.1, 0.7);
 //    MyAiPlayer player_2(0.1, 0.7);
 //    player_random_safe player_2;
@@ -45,7 +45,7 @@ int main()
         g.play_game();
         wins[g.get_winner()]++;
         if (i < 500) {
-            player_0.decrease_epsilon(0.0014);
+            player_0.decrease_epsilon(0.0004);
         }
     }
     for(int i = 0; i < 4; i++)
