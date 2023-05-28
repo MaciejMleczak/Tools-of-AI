@@ -45,20 +45,3 @@ void AnalysisController::save_win_perc(int round, double win_perc) {
         }
     }
 }
-
-void AnalysisController::save_win_perc_epsilon(int round, double win_perc, long double epsilon) {
-    if(enable) {
-        std::ofstream my_file(name, std::ios::app);
-
-        if (my_file.is_open()) {
-            my_file << round << ";";
-            my_file << win_perc << std::endl;
-            my_file.close();
-        } else {
-            throw std::exception();
-        }
-    }
-}
-
-
-

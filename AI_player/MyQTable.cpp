@@ -30,7 +30,7 @@ MyQTable::MyQTable()
     reward_table = new long double[ACTIONS];
     
     reward_table[MOVE_OUT] = 0.4;
-    reward_table[NORMAL] = 0.2;
+    reward_table[NORMAL] = 0.25;
     reward_table[IN_GOAL] = 1;
     reward_table[STAR] = 0.65;
     reward_table[PROTECT] = 0.3;

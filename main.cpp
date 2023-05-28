@@ -21,16 +21,16 @@ int main()
     test_game tester;
     tester.run_all_tests();
 
-    AnalysisController controller(false, "../ResultData/ep02_data.csv");
+    AnalysisController controller(false, "../ResultData/SARSA/ep05_data.csv");
     controller.initialize();
 
 
 //    Create players
 //    AI AGENTS
-    MyAiPlayer player_0(0.6, 0.8, EPSILON, false);
-//    MyAiPlayer player_1(0.6, 0.8, EPSILON);
-//    MyAiPlayer player_2(0.6, 0.8, EPSILON);
-//    MyAiPlayer player_3(0.6, 0.8, EPSILON);
+    MyAiPlayer player_0(0.5, 0.7, EPSILON, true);
+//    MyAiPlayer player_1(0.5, 0.7, EPSILON, false);
+//    MyAiPlayer player_2(0.5, 0.7, EPSILON, false);
+//    MyAiPlayer player_3(0.5, 0.7, EPSILON, false);
 
 //    RANDOM PLAYERS
     player_random player_1;
@@ -53,7 +53,7 @@ int main()
 //    player_random_safe player_3;
 
 
-    player_0.print_table();
+//    player_0.print_table();
 
     //Play a game of Ludo
     game g(&player_0, &player_1, &player_2, &player_3);
@@ -69,20 +69,23 @@ int main()
         wins[g.get_winner()]++;
 
         if(i == 0 || (i+1) % 50 == 0 && i<2500) {
-            controller.save_win_perc_epsilon(i + 1, (double) wins[0] * 100 / (i + 1), EPSILON);
+            controller.save_win_perc(i + 1, (double) wins[0] * 100 / (i + 1));
         }
-//        if(i < 1000) {
+//        if(i == 0 || (i+1) % 2 == 0 && i<2000) {
 //            controller.save_win_perc(i + 1, (double) wins[0] * 100 / (i + 1));
 //        }
         if (i < 500) {
-            player_0.decrease_epsilon(0.0004);
+            player_0.decrease_epsilon((long double)EPSILON/500);
+//            player_1.decrease_epsilon((long double)EPSILON/500);
+//            player_2.decrease_epsilon((long double)EPSILON/500);
+//            player_3.decrease_epsilon((long double)EPSILON/500);
         }
     }
     for(int i = 0; i < 4; i++)
         cout << "Player " << i << " won " << wins[i] << " games." << endl << endl;
 
 
-    player_0.print_table();
+//    player_0.print_table();
     cout<<endl;
 
     cout << "End of main" << endl;
